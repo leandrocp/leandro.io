@@ -17,37 +17,46 @@
   </head>
   <body class="bg-white dark:bg-gray-900">
     <header class="border-b border-gray-200 dark:border-gray-800">
-      <nav
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center">
-          <a href="index.html" class="text-blue-500 hover:underline">home</a>
-          <span class="text-black dark:text-white mx-2">/</span>
-          <a href="projects.html" class="text-blue-500 hover:underline"
-            >projects</a
-          >
-          <span class="text-black dark:text-white mx-2">/</span>
-          <a href="talks.html" class="text-blue-500 hover:underline">talks</a>
+      <nav class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <a href="index.html" class="text-blue-500 hover:underline">home</a>
+            <span class="text-black dark:text-white mx-2 hidden md:inline">/</span>
+            <a href="projects.html" class="text-blue-500 hover:underline hidden md:inline">projects</a>
+            <span class="text-black dark:text-white mx-2 hidden md:inline">/</span>
+            <a href="talks.html" class="text-blue-500 hover:underline hidden md:inline">talks</a>
+          </div>
+          <div class="flex items-center space-x-4">
+            <a
+              href="https://github.com/leandrocp"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              github
+            </a>
+            <a
+              href="https://x.com/leandrocesquini"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              twitter
+            </a>
+            <a
+              href="https://www.linkedin.com/in/leandrocesquini/"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              linkedin
+            </a>
+            <button id="mobile-menu-button" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="flex space-x-4">
-          <a
-            href="https://github.com/leandrocp"
-            class="text-blue-500 hover:text-blue-600 hover:underline"
-          >
-            github
-          </a>
-          <a
-            href="https://x.com/leandrocesquini"
-            class="text-blue-500 hover:text-blue-600 hover:underline"
-          >
-            twitter
-          </a>
-          <a
-            href="https://www.linkedin.com/in/leandrocesquini/"
-            class="text-blue-500 hover:text-blue-600 hover:underline"
-          >
-            linkedin
-          </a>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+          <div class="flex flex-col space-y-2">
+            <a href="projects.html" class="text-blue-500 hover:underline">projects</a>
+            <a href="talks.html" class="text-blue-500 hover:underline">talks</a>
+          </div>
         </div>
       </nav>
     </header>
@@ -57,19 +66,21 @@
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
           $ ls projects/
         </h1>
+        <p class="text-gray-600 dark:text-gray-300 mb-8">
+          Projects I've been more interested in. This is not an exhaustive list.
+        </p>
 
-        <!-- Lead Section -->
         <section>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
             > Lead
           </h2>
           <div class="space-y-6">
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   beacon
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/BeaconCMS/beacon"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -106,11 +117,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   beacon_live_admin
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/BeaconCMS/beacon_live_admin"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -146,18 +157,17 @@
           </div>
         </section>
 
-        <!-- Projects Section -->
         <section>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
             > Projects
           </h2>
           <div class="space-y-6">
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   mdex
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/mdex"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -194,11 +204,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   mdex_mermaid
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/mdex_mermaid"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -233,11 +243,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   live_view_demos
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/live_view_demos"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -261,11 +271,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   live_monaco_editor
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/BeaconCMS/live_monaco_editor"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -300,11 +310,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   req_embed
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/req_embed"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -340,11 +350,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   err
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/err"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -379,11 +389,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   autumnus
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/autumnus"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -418,11 +428,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   autumn
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/autumn"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -457,11 +467,11 @@
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   awesome-cqrs-event-sourcing
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/leandrocp/awesome-cqrs-event-sourcing"
                     class="text-blue-500 hover:text-blue-600 hover:underline flex items-center"
@@ -482,18 +492,17 @@
           </div>
         </section>
 
-        <!-- Contributions Section -->
         <section>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
             > Contributions
           </h2>
           <div class="space-y-6">
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   elixir
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/elixir-lang/elixir/commits?author=leandrocp"
                     class="text-blue-500 hover:text-blue-600 hover:underline"
@@ -505,14 +514,39 @@
                   >
                 </div>
               </div>
+              <p class="text-gray-600 dark:text-gray-300">
+                A dynamic, functional language designed for building scalable and maintainable applications.
+              </p>
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                  plug
+                </h3>
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
+                  <a
+                    href="https://github.com/elixir-plug/plug/commits?author=leandrocp"
+                    class="text-blue-500 hover:text-blue-600 hover:underline"
+                    >commits</a
+                  >
+                  <span
+                    class="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded"
+                    >elixir</span
+                  >
+                </div>
+              </div>
+              <p class="text-gray-600 dark:text-gray-300">
+                A specification and conveniences for composable modules between web applications.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   phoenix
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/phoenixframework/phoenix/commits?author=leandrocp"
                     class="text-blue-500 hover:text-blue-600 hover:underline"
@@ -524,14 +558,17 @@
                   >
                 </div>
               </div>
+              <p class="text-gray-600 dark:text-gray-300">
+                A productive web framework that does not compromise speed and maintainability.
+              </p>
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   phoenix_live_view
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/phoenixframework/phoenix_live_view/commits?author=leandrocp"
                     class="text-blue-500 hover:text-blue-600 hover:underline"
@@ -543,14 +580,17 @@
                   >
                 </div>
               </div>
+              <p class="text-gray-600 dark:text-gray-300">
+                Rich, real-time user experiences with server-rendered HTML.
+              </p>
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   igniter
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/ash-project/igniter/commits?author=leandrocp"
                     class="text-blue-500 hover:text-blue-600 hover:underline"
@@ -562,14 +602,17 @@
                   >
                 </div>
               </div>
+              <p class="text-gray-600 dark:text-gray-300">
+                A framework for building Elixir applications with a focus on developer experience.
+              </p>
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-2">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                   inkjet
                 </h3>
-                <div class="flex items-center space-x-4">
+                <div class="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
                   <a
                     href="https://github.com/Colonial-Dev/inkjet/commits?author=leandrocp"
                     class="text-blue-500 hover:text-blue-600 hover:underline"
@@ -581,10 +624,20 @@
                   >
                 </div>
               </div>
+              <p class="text-gray-600 dark:text-gray-300">
+                A high-performance, memory-safe printing system for Rust.
+              </p>
             </div>
           </div>
         </section>
       </div>
     </main>
+
+    <script>
+      document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+      });
+    </script>
   </body>
 </html>

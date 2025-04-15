@@ -17,37 +17,46 @@
   </head>
   <body class="bg-white dark:bg-gray-900">
     <header class="border-b border-gray-200 dark:border-gray-800">
-      <nav
-        class="container mx-auto px-4 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center">
-          <a href="index.html" class="text-blue-500 hover:underline">home</a>
-          <span class="text-black dark:text-white mx-2">/</span>
-          <a href="projects.html" class="text-blue-500 hover:underline"
-            >projects</a
-          >
-          <span class="text-black dark:text-white mx-2">/</span>
-          <a href="talks.html" class="text-blue-500 hover:underline">talks</a>
+      <nav class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <a href="index.html" class="text-blue-500 hover:underline">home</a>
+            <span class="text-black dark:text-white mx-2 hidden md:inline">/</span>
+            <a href="projects.html" class="text-blue-500 hover:underline hidden md:inline">projects</a>
+            <span class="text-black dark:text-white mx-2 hidden md:inline">/</span>
+            <a href="talks.html" class="text-blue-500 hover:underline hidden md:inline">talks</a>
+          </div>
+          <div class="flex items-center space-x-4">
+            <a
+              href="https://github.com/leandrocp"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              github
+            </a>
+            <a
+              href="https://x.com/leandrocesquini"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              twitter
+            </a>
+            <a
+              href="https://www.linkedin.com/in/leandrocesquini/"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              linkedin
+            </a>
+            <button id="mobile-menu-button" class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="flex space-x-4">
-          <a
-            href="https://github.com/leandrocp"
-            class="text-blue-500 hover:text-blue-600 hover:underline"
-          >
-            github
-          </a>
-          <a
-            href="https://x.com/leandrocesquini"
-            class="text-blue-500 hover:text-blue-600 hover:underline"
-          >
-            twitter
-          </a>
-          <a
-            href="https://www.linkedin.com/in/leandrocesquini/"
-            class="text-blue-500 hover:text-blue-600 hover:underline"
-          >
-            linkedin
-          </a>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+          <div class="flex flex-col space-y-2">
+            <a href="projects.html" class="text-blue-500 hover:underline">projects</a>
+            <a href="talks.html" class="text-blue-500 hover:underline">talks</a>
+          </div>
         </div>
       </nav>
     </header>
@@ -67,8 +76,8 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">
               Elixir Wizards • November 2024
             </p>
-            <div class="flex gap-12">
-              <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div class="w-full md:w-1/2">
                 <div class="aspect-video">
                   <iframe
                     class="w-full h-full"
@@ -81,7 +90,7 @@
                   ></iframe>
                 </div>
               </div>
-              <div class="w-1/2">
+              <div class="w-full md:w-1/2">
                 <p class="text-gray-600 dark:text-gray-300">
                   An interview about Beacon CMS, discussing its features,
                   architecture, and the future of content management systems.
@@ -106,8 +115,8 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">
               Ash Project • October 2024
             </p>
-            <div class="flex gap-12">
-              <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div class="w-full md:w-1/2">
                 <div class="aspect-video">
                   <iframe
                     class="w-full h-full"
@@ -120,7 +129,7 @@
                   ></iframe>
                 </div>
               </div>
-              <div class="w-1/2">
+              <div class="w-full md:w-1/2">
                 <p class="text-gray-600 dark:text-gray-300">
                   A live coding session working on Igniter installers for
                   BeaconCMS, showcasing the development process and
@@ -146,8 +155,8 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">
               ElixirConf 2023 • September 2023
             </p>
-            <div class="flex gap-12">
-              <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div class="w-full md:w-1/2">
                 <div class="aspect-video">
                   <iframe
                     class="w-full h-full"
@@ -160,7 +169,7 @@
                   ></iframe>
                 </div>
               </div>
-              <div class="w-1/2">
+              <div class="w-full md:w-1/2">
                 <p class="text-gray-600 dark:text-gray-300">
                   A deep dive into Beacon, a next-generation Content Management
                   System built with Phoenix LiveView. Learn about its
@@ -187,8 +196,8 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">
               Elixir em Foco • August 2023
             </p>
-            <div class="flex gap-12">
-              <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div class="w-full md:w-1/2">
                 <div class="aspect-video">
                   <iframe
                     class="w-full h-full"
@@ -201,7 +210,7 @@
                   ></iframe>
                 </div>
               </div>
-              <div class="w-1/2">
+              <div class="w-full md:w-1/2">
                 <p class="text-gray-600 dark:text-gray-300">
                   Neste episódio entrevistamos Leandro Pereira, engenheiro de
                   software sênior na DockYard. Leandro aborda o uso da linguagem
@@ -227,8 +236,8 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">
               ElixirConf 2020 • October 2020
             </p>
-            <div class="flex gap-12">
-              <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div class="w-full md:w-1/2">
                 <div class="aspect-video">
                   <iframe
                     class="w-full h-full"
@@ -241,7 +250,7 @@
                   ></iframe>
                 </div>
               </div>
-              <div class="w-1/2">
+              <div class="w-full md:w-1/2">
                 <p class="text-gray-600 dark:text-gray-300">
                   A talk about how to contribute to Elixir and its ecosystem,
                   sharing insights on staying engaged with the community and
@@ -267,8 +276,8 @@
             <p class="text-gray-600 dark:text-gray-300 mb-6">
               Elixir Mix • June 2019
             </p>
-            <div class="flex gap-12">
-              <div class="w-1/2">
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+              <div class="w-full md:w-1/2">
                 <div class="aspect-video">
                   <iframe
                     class="w-full h-full"
@@ -281,7 +290,7 @@
                   ></iframe>
                 </div>
               </div>
-              <div class="w-1/2">
+              <div class="w-full md:w-1/2">
                 <p class="text-gray-600 dark:text-gray-300">
                   Leandro Pereira starts by sharing what the Elixir community is
                   like in Brazil. He explains what applications Phoenix LiveView
@@ -303,5 +312,12 @@
         </div>
       </div>
     </main>
+
+    <script>
+      document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+      });
+    </script>
   </body>
 </html>
