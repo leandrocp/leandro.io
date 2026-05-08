@@ -1,6 +1,6 @@
 # Rust In Elixir - A Survival Guide
 
-This is a live guide listing potential solutions to common problems you can face integrating Rust into Elixir projects, it will be updated as tools evolve and new problems or solutions are discovered. It's based on my own experience and opnion working on this space, it may not fit your needs but contributions and discussions are welcome.
+This is a live guide listing potential solutions to common problems you can face integrating Rust into Elixir projects. It will be updated as tools evolve and new problems or solutions are discovered. It's based on my own experience and opinion working in this space. It may not fit your needs, but [contributions and discussions are welcome](https://github.com/leandrocp/leandro.io/blob/main/rust_in_elixir.md).
 
 Current version: 2026-05-08
 
@@ -12,7 +12,7 @@ Adopting Rust can solve a variety of problems:
 
 But it's not risk free, and rushing to writing code without understanding the implications might cause unexpected outcomes especially in production.
 
-Following is a list of problems, concerns, and the potential solutions and at the end you find the mental model to architect Rust in Elixir in a sane and safe way and reference for further reading.
+Following is a list of problems, concerns, and potential solutions. At the end you will find the mental model I use to architect Rust in Elixir in a sane and safe way, plus references for further reading.
 
 - [Understand the risks](#understand-the-risks)
 - [Problems, Concerns, and Solutions](#problems-concerns-and-solutions)
@@ -40,7 +40,7 @@ A native function is executed as a direct extension of the native code of the VM
 - A native function doing lengthy work before returning degrades responsiveness of the VM, and can cause miscellaneous strange behaviors. Such strange behaviors include, but are not limited to, extreme memory usage, and bad load balancing between schedulers. Strange behaviors that can occur because of lengthy work can also vary between Erlang/OTP releases.
 ```
 
-It may sound catastrophic but realiability is non-negotiable. Luckly we can be on the safe side by following some patterns:
+It may sound catastrophic, but reliability is non-negotiable. Luckily, we can stay on the safe side by following some patterns:
 
 ## Problems, Concerns, and Solutions
 
@@ -55,11 +55,11 @@ fn some_operation<'a>(env: Env<'a>) -> NifResult<Term<'a>> {
 }
 ```
 
-Then you deploy to production and latency goes to sky.
+Then you deploy to production and latency goes through the roof.
 
 BEAM code is preemptively scheduled, processes run until they spend their reduction budget, then the scheduler can switch to another process. A normal NIF bypasses that mechanism. While the scheduler is executing native code, it cannot be preempted. If the NIF takes 1000ms, that scheduler is unavailable for 1000ms.
 
-As the [doc says](https://www.erlang.org/doc/apps/erts/erl_nif.html#lengthy_work): "it is of vital importance that a native function returns relatively fast [...] A NIF that cannot be split and cannot execute in a millisecond or less is called a dirty NIF [...] It is important to classify the dirty job correct. An I/O bound job should be classified as such, and a CPU bound job should be classified as such".
+As the [doc says](https://www.erlang.org/doc/apps/erts/erl_nif.html#lengthy_work): "it is of vital importance that a native function returns relatively fast [...] A NIF that cannot be split and cannot execute in a millisecond or less is called a dirty NIF [...] It is important to classify the dirty job correctly. An I/O bound job should be classified as such, and a CPU bound job should be classified as such".
 
 Unless you're certain the NIF always returns within 1ms, you must flag the function to run in either the DirtyCPU scheduler or the DirtyIo scheduler using the [nif](https://docs.rs/rustler/latest/rustler/attr.nif.html) attribute macro:
 
@@ -115,7 +115,7 @@ And surprise!
 
 A [NifMap](https://docs.rs/rustler/latest/rustler/derive.NifMap.html) expects atom keys and you tried to pass string keys. The type looks right, the fields are present, but still gets a runtime crash.
 
-Besides tests that exercise the actual data shape that you have in production, you can adopt [NimbleOptions](https://hexdocs.pm/nimble_options/NimbleOptions.html) to validate each piece of the data that must be passed between the boundaries to avoid such errors, or eventually adopt the upcoming Elixir type system.
+Besides tests that exercise the actual data shape you have in production, validate data before it crosses the NIF boundary. Pattern matching, custom validators, schemas, or [NimbleOptions](https://hexdocs.pm/nimble_options/NimbleOptions.html) for option-shaped data can all help. The upcoming Elixir type system may help too, but external input still needs runtime validation.
 
 ### Data Types
 
@@ -253,6 +253,12 @@ end
 ```
 
 ```rust
+#[derive(rustler::NifMap)]
+struct Delta {
+    x: i64,
+    y: i64,
+}
+
 #[derive(rustler::NifStruct)]
 #[module = "RustInElixir.Point"]
 struct Point {
@@ -284,13 +290,7 @@ RustInElixir.Native.move_point(%RustInElixir.Point{x: 2, y: 3}, %{x: 10, y: 20})
 
 Use [`NifMap`](https://docs.rs/rustler/latest/rustler/derive.NifMap.html) for plain Elixir maps with atom keys.
 
-```rust
-#[derive(rustler::NifMap)]
-struct Delta {
-    x: i64,
-    y: i64,
-}
-```
+The `Delta` type used by `move_point/2` above is one example.
 
 Elixir:
 
@@ -357,7 +357,7 @@ RustInElixir.Native.normalize_name("   ")
 # ** (ArgumentError) argument error
 ```
 
-Note how we added the capability to pass a String to a `NonEmptyString` and Rustler route the encoding/decoding properly.
+Note how we added the capability to pass a String to a `NonEmptyString` and Rustler routes the encoding/decoding properly.
 
 But be careful because bad input that's not validated correctly becomes a NIF decode error at runtime.
 
@@ -391,7 +391,7 @@ The BEAM does not receive the whole table after every filter, join, select, or a
 
 Do not use a resource when a regular NIF can just return the answer. If you call Rust once with some input and get one result back, then a resource is probably not correct use.
 
-On the Rust side you must implement [`Resource`](https://docs.rs/rustler/latest/rustler/trait.Resource.html), and values are wrapped in [`ResourceArc`](https://docs.rs/rustler/latest/rustler/struct.ResourceArc.html):
+On the Rust side you must implement [`Resource`](https://docs.rs/rustler/latest/rustler/trait.Resource.html), and values are wrapped in [`ResourceArc`](https://docs.rs/rustler/latest/rustler/struct.ResourceArc.html). Resource types must be `Send + Sync`, so immutable data is easiest. Mutable resources need explicit synchronization with something like `Mutex`, `RwLock`, atomics, or another concurrency strategy.
 
 ```rust
 use rustler::{NifResult, Resource, ResourceArc};
@@ -405,9 +405,9 @@ struct Table {
 #[rustler::resource_impl]
 impl Resource for Table {}
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif(schedule = "DirtyIo")]
 fn load_csv(path: String) -> NifResult<ResourceArc<Table>> {
-    // 1. Build the big value once in Rust memory.
+    // 1. Read and build the big value once in Rust memory.
     let data = ...; // parse CSV into native memory
 
     // 2. Return a handle to Elixir, not the table itself.
@@ -447,15 +447,15 @@ Native.summarize(filtered)
 # %{rows: 1_200_000, columns: 42, ...}
 ```
 
-Each NIF receives a handle, does the heavy work in Rust, and returns either another handle or a small Elixir value. 
+Each NIF receives a handle, does the heavy work in Rust, and returns either another handle or a small Elixir value.
 
-[Explorer](https://github.com/elixir-explorer/explorer) makes extensive use of Resources and is a grea real-world example to learn more.
+[Explorer](https://github.com/elixir-explorer/explorer) makes extensive use of Resources and is a great real-world example to learn more.
 
-There are some implication on using resources that will be covered in a following update.
+There are some implications to using resources that will be covered in a following update.
 
 ### Safe Rust
 
-Rust is considered memory-safe language but it can be [unsafe](https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html) which opens the door for operations that can segfault and crash the whole BEAM instance.
+Rust is considered a memory-safe language, but it has [unsafe](https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html), which opens the door for operations that can segfault and crash the whole BEAM instance.
 
 Do some research on the libs you're using and never use `unsafe` unless you absolutely need to.
 
@@ -504,9 +504,9 @@ fn to_html(markdown: String, opts: Options) -> NifResult<String> {
 }
 ```
 
-Elixir is the coordinator and that's the reason I avoid async Ryst. The BEAM was made for concurrency and if Rust starts owning the workflow, spawning long-lived tasks, managing queues, retrying work, and keeping global application state, you no longer have "a Rust module in an Elixir app".
+Elixir is the coordinator, and that's the reason I avoid letting Rust own async workflows. The BEAM was made for concurrency, and if Rust starts owning the workflow, spawning long-lived tasks, managing queues, retrying work, and keeping global application state, you no longer have "a Rust module in an Elixir app".
 
-Error handling becomes a natural consequense of this mental modal and patterns.
+Error handling becomes a natural consequence of this mental model and these patterns.
 
 ## References
 
