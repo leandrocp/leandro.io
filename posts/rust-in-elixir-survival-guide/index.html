@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A practical survival guide for integrating Rust into Elixir projects safely."
+    />
+    <title>Rust In Elixir - A Survival Guide - Leandro Pereira</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.min.css"
+    />
+    <style>
+      body {
+        font-family: "JetBrains Mono", monospace;
+        overflow-y: scroll;
+      }
+
+      .article-content {
+        color: rgb(55 65 81);
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        font-size: 1.0625rem;
+        line-height: 1.75;
+      }
+
+      .article-content h1,
+      .article-content h2,
+      .article-content h3 {
+        color: rgb(17 24 39);
+        font-weight: 700;
+        line-height: 1.3;
+        scroll-margin-top: 2rem;
+      }
+
+      .article-content h1 {
+        font-size: 2.5rem;
+        letter-spacing: -0.025em;
+        margin: 0 0 1.5rem;
+      }
+
+      .article-content h2 {
+        font-size: 1.5rem;
+        margin: 3rem 0 1rem;
+      }
+
+      .article-content h3 {
+        font-size: 1.25rem;
+        margin: 2rem 0 0.75rem;
+      }
+
+      .article-content p,
+      .article-content ul,
+      .article-content ol,
+      .article-content pre,
+      .article-content blockquote {
+        margin: 1rem 0;
+      }
+
+      .article-content ul,
+      .article-content ol {
+        padding-left: 1.5rem;
+      }
+
+      .article-content ul {
+        list-style: square;
+      }
+
+      .article-content ol {
+        list-style: decimal;
+      }
+
+      .article-content li + li {
+        margin-top: 0.5rem;
+      }
+
+      .article-content a {
+        color: rgb(59 130 246);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
+
+      .article-content code {
+        background: rgb(243 244 246);
+        border-radius: 0.375rem;
+        color: rgb(17 24 39);
+        font-family:
+          "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.9em;
+        padding: 0.15rem 0.35rem;
+      }
+
+      .article-content pre {
+        border: 1px solid rgb(209 213 219);
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        padding: 1rem;
+      }
+
+      .article-content pre code {
+        background: transparent;
+        border-radius: 0;
+        color: inherit;
+        font-size: 0.875rem;
+        line-height: 1.7;
+        padding: 0;
+      }
+
+      .article-content pre .line {
+        display: block;
+      }
+
+      .article-content blockquote {
+        border-left: 4px solid rgb(59 130 246);
+        color: rgb(75 85 99);
+        padding-left: 1rem;
+      }
+
+      .article-content strong {
+        color: rgb(17 24 39);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content strong {
+          color: rgb(255 255 255);
+        }
+
+        .article-content {
+          color: rgb(209 213 219);
+        }
+
+        .article-content a {
+          color: rgb(96 165 250);
+        }
+
+        .article-content code {
+          background: rgb(31 41 55);
+          color: rgb(243 244 246);
+        }
+
+        .article-content blockquote {
+          color: rgb(209 213 219);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-white dark:bg-gray-900">
+    <header class="border-b border-gray-200 dark:border-gray-800">
+      <nav class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <a href="/" class="text-blue-500 hover:underline">home</a>
+            <span class="text-black dark:text-white mx-2 hidden md:inline"
+              >/</span
+            >
+            <a
+              href="/projects"
+              class="text-blue-500 hover:underline hidden md:inline"
+              >projects</a
+            >
+            <span class="text-black dark:text-white mx-2 hidden md:inline"
+              >/</span
+            >
+            <a
+              href="/talks"
+              class="text-blue-500 hover:underline hidden md:inline"
+              >talks</a
+            >
+            <span class="text-black dark:text-white mx-2 hidden md:inline"
+              >/</span
+            >
+            <a
+              href="/posts"
+              class="text-blue-500 hover:underline hidden md:inline"
+              >posts</a
+            >
+          </div>
+          <div class="flex items-center space-x-4">
+            <a
+              href="https://github.com/leandrocp"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              github
+            </a>
+            <a
+              href="https://x.com/leandrocesquini"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              twitter
+            </a>
+            <a
+              href="https://bsky.app/profile/leandrocp.bsky.social"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              <span class="md:hidden">bsky</span>
+              <span class="hidden md:inline">bluesky</span>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/leandrocesquini/"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              linkedin
+            </a>
+            <a
+              href="https://hex.pm/users/leandrocp"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              hex
+            </a>
+            <a
+              href="https://crates.io/users/leandrocp"
+              class="text-blue-500 hover:text-blue-600 hover:underline"
+            >
+              crates
+            </a>
+            <button
+              id="mobile-menu-button"
+              class="md:hidden text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+          <div class="flex flex-col space-y-2">
+            <a href="/projects" class="text-blue-500 hover:underline"
+              >projects</a
+            >
+            <a href="/talks" class="text-blue-500 hover:underline">talks</a>
+            <a href="/posts" class="text-blue-500 hover:underline">posts</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+      <div class="max-w-3xl mx-auto">
+        <div class="mb-8 space-y-3">
+          <a href="/posts" class="text-blue-500 hover:text-blue-600 hover:underline"
+            >$ cd /posts</a
+          >
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Live guide last updated on 2026-05-08.
+          </p>
+        </div>
+
+        <article class="article-content bg-white py-8 dark:bg-gray-900">
+          <!-- article:start -->
+<h1><a href="#rust-in-elixir---a-survival-guide" aria-hidden="true" class="anchor" id="rust-in-elixir---a-survival-guide"></a>Rust In Elixir - A Survival Guide</h1>
+<p>This is a live guide listing potential solutions to common problems you can face integrating Rust into Elixir projects, it will be updated as tools evolve and new problems or solutions are discovered. It's based on my own experience and opnion working on this space, it may not fit your needs but contributions and discussions are welcome.</p>
+<p>Current version: 2026-05-08</p>
+<p>Adopting Rust can solve a variety of problems:</p>
+<ul>
+<li>Performance</li>
+<li>Security</li>
+<li>Lack of libs</li>
+</ul>
+<p>But it's not risk free, and rushing to writing code without understanding the implications might cause unexpected outcomes especially in production.</p>
+<p>Following is a list of problems, concerns, and the potential solutions and at the end you find the mental model to architect Rust in Elixir in a sane and safe way and reference for further reading.</p>
+<ul>
+<li><a href="#understand-the-risks">Understand the risks</a></li>
+<li><a href="#problems-concerns-and-solutions">Problems, Concerns, and Solutions</a>
+<ul>
+<li><a href="#dirty-scheduler">Dirty Scheduler</a></li>
+<li><a href="#encoding--decoding">Encoding / Decoding</a></li>
+<li><a href="#data-types">Data Types</a></li>
+<li><a href="#custom-data-types">Custom Data Types</a></li>
+<li><a href="#resources">Resources</a></li>
+<li><a href="#safe-rust">Safe Rust</a></li>
+</ul>
+</li>
+<li><a href="#mental-model">Mental Model</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2><a href="#understand-the-risks" aria-hidden="true" class="anchor" id="understand-the-risks"></a>Understand the risks</h2>
+<p>If you don't want to read this whole doc, at least read this warning extracted from <a href="https://www.erlang.org/doc/apps/erts/erl_nif.html#description">erl_nif</a></p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-plaintext" translate="no" tabindex="0"><div class="line" data-line="1">Use this functionality with extreme care.
+</div><div class="line" data-line="2">
+</div><div class="line" data-line="3">A native function is executed as a direct extension of the native code of the VM. Execution is not made in a safe environment. The VM cannot provide the same services as provided when executing Erlang code, such as pre-emptive scheduling or memory protection. If the native function does not behave well, the whole VM will misbehave.
+</div><div class="line" data-line="4">
+</div><div class="line" data-line="5">- A native function that crashes will crash the whole VM.
+</div><div class="line" data-line="6">- An erroneously implemented native function can cause a VM internal state inconsistency, which can cause a crash of the VM, or miscellaneous misbehaviors of the VM at any point after the call to the native function.
+</div><div class="line" data-line="7">- A native function doing lengthy work before returning degrades responsiveness of the VM, and can cause miscellaneous strange behaviors. Such strange behaviors include, but are not limited to, extreme memory usage, and bad load balancing between schedulers. Strange behaviors that can occur because of lengthy work can also vary between Erlang/OTP releases.
+</div></code></pre>
+<p>It may sound catastrophic but realiability is non-negotiable. Luckly we can be on the safe side by following some patterns:</p>
+<h2><a href="#problems-concerns-and-solutions" aria-hidden="true" class="anchor" id="problems-concerns-and-solutions"></a>Problems, Concerns, and Solutions</h2>
+<h3><a href="#dirty-scheduler" aria-hidden="true" class="anchor" id="dirty-scheduler"></a>Dirty Scheduler</h3>
+<p>You write your first NIF and it works beautifully in tests:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">some_operation</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">env</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Env</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Term</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">..</span><span style="color: #1f2328;">.</span>
+</div><div class="line" data-line="4"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Then you deploy to production and latency goes to sky.</p>
+<p>BEAM code is preemptively scheduled, processes run until they spend their reduction budget, then the scheduler can switch to another process. A normal NIF bypasses that mechanism. While the scheduler is executing native code, it cannot be preempted. If the NIF takes 1000ms, that scheduler is unavailable for 1000ms.</p>
+<p>As the <a href="https://www.erlang.org/doc/apps/erts/erl_nif.html#lengthy_work">doc says</a>: &quot;it is of vital importance that a native function returns relatively fast [...] A NIF that cannot be split and cannot execute in a millisecond or less is called a dirty NIF [...] It is important to classify the dirty job correct. An I/O bound job should be classified as such, and a CPU bound job should be classified as such&quot;.</p>
+<p>Unless you're certain the NIF always returns within 1ms, you must flag the function to run in either the DirtyCPU scheduler or the DirtyIo scheduler using the <a href="https://docs.rs/rustler/latest/rustler/attr.nif.html">nif</a> attribute macro:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div></code></pre>
+<p>Use <code>DirtyCpu</code> for work that burns CPU: parsing, hashing, compression, image processing, search, crypto.</p>
+<p>Use <code>DirtyIo</code> for blocking work: filesystem, sockets, DNS, devices, or a C library doing blocking I/O.</p>
+<p>Dirty schedulers are separate scheduler pools for work that should not run on the normal BEAM schedulers and you can fine-tune these pools with <a href="https://www.erlang.org/doc/apps/erts/erl_cmd.html#+SDcpu"><code>+SDcpu</code> and <code>+SDio</code></a> flags.</p>
+<h3><a href="#encoding--decoding" aria-hidden="true" class="anchor" id="encoding--decoding"></a>Encoding / Decoding</h3>
+<p>AKA passing data over the boundaries between Elixir and Rust.</p>
+<p>The code is well tested, everything works and is performant but then you're surprised with exceptions in production because some data shape is incorrect and the processes are crashing.</p>
+<p>This is the kind of silent error you only observe at runtime if you're not cautious.</p>
+<p>For example, this Rust function:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">derive</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #953800;">NifMap</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">struct</span> <span style="color: #953800;">AssetPath</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">root</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="4">    <span style="color: #0550ae;">path</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="5"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="6">
+</div><div class="line" data-line="7"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="8"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">rewrite_asset_url</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">asset_path</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">AssetPath</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">String</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="9">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #0550ae;">format</span><span style="color: #6639ba;">!</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;&lbrace;&rbrace;&lbrace;&rbrace;&quot;</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">asset_path</span><span style="color: #1f2328;">.</span><span style="color: #1f2328;">root</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">asset_path</span><span style="color: #1f2328;">.</span><span style="color: #1f2328;">path</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="10"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Called by this Elixir code:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">asset_path</span> <span style="color: #0550ae;">=</span> <span style="color: #953800;">Jason</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">decode!</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">~</span>s<span style="color: #1f2328;">(</span>&lbrace;&quot;root&quot;:&quot;https://cdn.example.com/&quot;,&quot;path&quot;:&quot;app.css&quot;&rbrace;<span style="color: #1f2328;">)</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="2"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">rewrite_asset_url</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">asset_path</span><span style="color: #1f2328;">)</span>
+</div></code></pre>
+<p>And surprise!</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-plaintext" translate="no" tabindex="0"><div class="line" data-line="1">** (ArgumentError) argument error
+</div><div class="line" data-line="2">    (rust_in_elixir 0.1.0) RustInElixir.Native.rewrite_asset_url(%&lbrace;&quot;path&quot; =&gt; &quot;app.css&quot;, &quot;root&quot; =&gt; &quot;https://cdn.example.com/&quot;&rbrace;)
+</div><div class="line" data-line="3">    (stdlib 7.3) erl_eval.erl:924: :erl_eval.do_apply/7
+</div><div class="line" data-line="4">    (elixir 1.20.0-rc.2) lib/code.ex:634: Code.validated_eval_string/3
+</div></code></pre>
+<p>A <a href="https://docs.rs/rustler/latest/rustler/derive.NifMap.html">NifMap</a> expects atom keys and you tried to pass string keys. The type looks right, the fields are present, but still gets a runtime crash.</p>
+<p>Besides tests that exercise the actual data shape that you have in production, you can adopt <a href="https://hexdocs.pm/nimble_options/NimbleOptions.html">NimbleOptions</a> to validate each piece of the data that must be passed between the boundaries to avoid such errors, or eventually adopt the upcoming Elixir type system.</p>
+<h3><a href="#data-types" aria-hidden="true" class="anchor" id="data-types"></a>Data Types</h3>
+<p>Sometimes you spend half of the time just mapping data from one side to another.</p>
+<p>Scalar data types are easy. Strings, integers, floats, booleans and lists usually map directly. The confusing parts are structs, maps and enums which are not so obvious at first.</p>
+<h4><a href="#atoms-to-unit-enums" aria-hidden="true" class="anchor" id="atoms-to-unit-enums"></a>Atoms to unit enums</h4>
+<p>Use <a href="https://docs.rs/rustler/latest/rustler/derive.NifUnitEnum.html"><code>NifUnitEnum</code></a> when each Rust enum variant maps to one Elixir atom.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">derive</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #953800;">NifUnitEnum</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">enum</span> <span style="color: #953800;">Alignment</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">Left</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="4">    <span style="color: #0550ae;">Center</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="5">    <span style="color: #0550ae;">Right</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="6"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="7">
+</div><div class="line" data-line="8"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="9"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">align</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">alignment</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Alignment</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">String</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="10">    <span style="color: #cf222e;">let</span> <span style="color: #1f2328;">class</span> <span style="color: #0550ae;">=</span> <span style="color: #cf222e;">match</span> <span style="color: #1f2328;">alignment</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="11">        <span style="color: #953800;">Alignment</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Left</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0a3069;">&quot;text-left&quot;</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="12">        <span style="color: #953800;">Alignment</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Center</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0a3069;">&quot;text-center&quot;</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="13">        <span style="color: #953800;">Alignment</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Right</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0a3069;">&quot;text-right&quot;</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="14">    <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="15">
+</div><div class="line" data-line="16">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">class</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">to_string</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="17"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># Calls the Rust fn align/1 above.</span>
+</div><div class="line" data-line="2"><span style="color: #57606a;"># The atom :left decodes into Alignment::Left.</span>
+</div><div class="line" data-line="3"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">align</span><span style="color: #1f2328;">(</span><span style="color: #0550ae;">:left</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="4"><span style="color: #57606a;"># &quot;text-left&quot;</span>
+</div></code></pre>
+<p>Rustler converts Rust variant names from <code>CamelCase</code> to <code>snake_case</code> atoms. <code>FooBar</code> becomes <code>:foo_bar</code>.</p>
+<h4><a href="#tagged-tuples-to-enums" aria-hidden="true" class="anchor" id="tagged-tuples-to-enums"></a>Tagged tuples to enums</h4>
+<p>Use <a href="https://docs.rs/rustler/latest/rustler/derive.NifTaggedEnum.html"><code>NifTaggedEnum</code></a> when variants carry different data.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">derive</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #953800;">NifTaggedEnum</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">enum</span> <span style="color: #953800;">UiEvent</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">Loading</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="4">    <span style="color: #0550ae;">Redirect</span><span style="color: #1f2328;">(</span><span style="color: #953800;">String</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="5">    <span style="color: #0550ae;">Resize</span> <span style="color: #1f2328;">&lbrace;</span> <span style="color: #0550ae;">width</span><span style="color: #1f2328;">:</span> <span style="color: #cf222e;">u32</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">height</span><span style="color: #1f2328;">:</span> <span style="color: #cf222e;">u32</span> <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="6"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="7">
+</div><div class="line" data-line="8"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="9"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">render_event</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">event</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">UiEvent</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">String</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="10">    <span style="color: #cf222e;">let</span> <span style="color: #1f2328;">rendered</span> <span style="color: #0550ae;">=</span> <span style="color: #cf222e;">match</span> <span style="color: #1f2328;">event</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="11">        <span style="color: #953800;">UiEvent</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Loading</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0a3069;">&quot;loading&quot;</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">to_string</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="12">        <span style="color: #953800;">UiEvent</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Redirect</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">path</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0550ae;">format</span><span style="color: #6639ba;">!</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;redirect to &lbrace;path&rbrace;&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="13">        <span style="color: #953800;">UiEvent</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Resize</span> <span style="color: #1f2328;">&lbrace;</span> <span style="color: #0550ae;">width</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">height</span> <span style="color: #1f2328;">&rbrace;</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0550ae;">format</span><span style="color: #6639ba;">!</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;resize to &lbrace;width&rbrace;x&lbrace;height&rbrace;&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="14">    <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="15">
+</div><div class="line" data-line="16">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rendered</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="17"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># Calls the Rust fn render_event/1 above.</span>
+</div><div class="line" data-line="2"><span style="color: #57606a;"># :loading decodes into UiEvent::Loading.</span>
+</div><div class="line" data-line="3"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">render_event</span><span style="color: #1f2328;">(</span><span style="color: #0550ae;">:loading</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="4"><span style="color: #57606a;"># &quot;loading&quot;</span>
+</div><div class="line" data-line="5">
+</div><div class="line" data-line="6"><span style="color: #57606a;"># &lbrace;:redirect, &quot;/docs&quot;&rbrace; decodes into UiEvent::Redirect(String).</span>
+</div><div class="line" data-line="7"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">render_event</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">:redirect</span><span style="color: #1f2328;">,</span> <span style="color: #0a3069;">&quot;/docs&quot;</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="8"><span style="color: #57606a;"># &quot;redirect to /docs&quot;</span>
+</div><div class="line" data-line="9">
+</div><div class="line" data-line="10"><span style="color: #57606a;"># &lbrace;:resize, %&lbrace;...&rbrace;&rbrace; decodes into UiEvent::Resize &lbrace; width, height &rbrace;.</span>
+</div><div class="line" data-line="11"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">render_event</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">:resize</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">%</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">width: </span><span style="color: #0550ae;">800</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">height: </span><span style="color: #0550ae;">600</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="12"><span style="color: #57606a;"># &quot;resize to 800x600&quot;</span>
+</div></code></pre>
+<p>The mapping is:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #0550ae;">:loading</span>
+</div><div class="line" data-line="2"><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">:redirect</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">value</span><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="3"><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">:resize</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">%</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">width: </span><span style="color: #1f2328;">value</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">height: </span><span style="color: #1f2328;">value</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<h4><a href="#untagged-unions" aria-hidden="true" class="anchor" id="untagged-unions"></a>Untagged unions</h4>
+<p>Use <a href="https://docs.rs/rustler/latest/rustler/derive.NifUntaggedEnum.html"><code>NifUntaggedEnum</code></a> when the type itself decides the variant.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">derive</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #953800;">NifUntaggedEnum</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">enum</span> <span style="color: #953800;">Input</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">Id</span><span style="color: #1f2328;">(</span><span style="color: #cf222e;">u64</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="4">    <span style="color: #0550ae;">Name</span><span style="color: #1f2328;">(</span><span style="color: #953800;">String</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="5"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="6">
+</div><div class="line" data-line="7"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="8"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">describe_input</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">input</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Input</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">String</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="9">    <span style="color: #cf222e;">let</span> <span style="color: #1f2328;">description</span> <span style="color: #0550ae;">=</span> <span style="color: #cf222e;">match</span> <span style="color: #1f2328;">input</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="10">        <span style="color: #953800;">Input</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Id</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">id</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0550ae;">format</span><span style="color: #6639ba;">!</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;id=&lbrace;id&rbrace;&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="11">        <span style="color: #953800;">Input</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">Name</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">name</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">=&gt;</span> <span style="color: #0550ae;">format</span><span style="color: #6639ba;">!</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;name=&lbrace;name&rbrace;&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="12">    <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="13">
+</div><div class="line" data-line="14">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">description</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="15"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># Calls the Rust fn describe_input/1 above.</span>
+</div><div class="line" data-line="2"><span style="color: #57606a;"># 123 decodes into Input::Id(123).</span>
+</div><div class="line" data-line="3"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">describe_input</span><span style="color: #1f2328;">(</span><span style="color: #0550ae;">123</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="4"><span style="color: #57606a;"># &quot;id=123&quot;</span>
+</div><div class="line" data-line="5">
+</div><div class="line" data-line="6"><span style="color: #57606a;"># &quot;hello&quot; decodes into Input::Name(&quot;hello&quot;).</span>
+</div><div class="line" data-line="7"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">describe_input</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;hello&quot;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="8"><span style="color: #57606a;"># &quot;name=hello&quot;</span>
+</div></code></pre>
+<h4><a href="#elixir-structs" aria-hidden="true" class="anchor" id="elixir-structs"></a>Elixir Structs</h4>
+<p>Use <a href="https://docs.rs/rustler/latest/rustler/derive.NifStruct.html"><code>NifStruct</code></a> when Rust expects an Elixir struct.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #cf222e;">defmodule</span> <span style="color: #953800;">RustInElixir.Point</span> <span style="color: #cf222e;">do</span>
+</div><div class="line" data-line="2">  <span style="color: #cf222e;">defstruct</span> <span style="color: #0550ae;">x: </span><span style="color: #0550ae;">0</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">y: </span><span style="color: #0550ae;">0</span>
+</div><div class="line" data-line="3"><span style="color: #cf222e;">end</span>
+</div></code></pre>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">derive</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #953800;">NifStruct</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">module</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;RustInElixir.Point&quot;</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="3"><span style="color: #cf222e;">struct</span> <span style="color: #953800;">Point</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="4">    <span style="color: #0550ae;">x</span><span style="color: #1f2328;">:</span> <span style="color: #cf222e;">i64</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="5">    <span style="color: #0550ae;">y</span><span style="color: #1f2328;">:</span> <span style="color: #cf222e;">i64</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="6"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="7">
+</div><div class="line" data-line="8"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="9"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">move_point</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">point</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Point</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">delta</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Delta</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Point</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="10">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #953800;">Point</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="11">        <span style="color: #0550ae;">x</span><span style="color: #1f2328;">:</span> <span style="color: #1f2328;">point</span><span style="color: #1f2328;">.</span><span style="color: #0550ae;">x</span> <span style="color: #0550ae;">+</span> <span style="color: #1f2328;">delta</span><span style="color: #1f2328;">.</span><span style="color: #0550ae;">x</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="12">        <span style="color: #0550ae;">y</span><span style="color: #1f2328;">:</span> <span style="color: #1f2328;">point</span><span style="color: #1f2328;">.</span><span style="color: #0550ae;">y</span> <span style="color: #0550ae;">+</span> <span style="color: #1f2328;">delta</span><span style="color: #1f2328;">.</span><span style="color: #0550ae;">y</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="13">    <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="14"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># Calls the Rust fn move_point/2 above.</span>
+</div><div class="line" data-line="2"><span style="color: #57606a;"># %RustInElixir.Point&lbrace;&rbrace; decodes into the Rust Point struct.</span>
+</div><div class="line" data-line="3"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">move_point</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">%</span><span style="color: #953800;">RustInElixir.Point</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">x: </span><span style="color: #0550ae;">2</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">y: </span><span style="color: #0550ae;">3</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">%</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">x: </span><span style="color: #0550ae;">10</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">y: </span><span style="color: #0550ae;">20</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="4"><span style="color: #57606a;"># %RustInElixir.Point&lbrace;x: 12, y: 23&rbrace;</span>
+</div></code></pre>
+<p><code>NifStruct</code> expects the actual Elixir struct. Passing a plain map with the same fields, like <code>%&lbrace;x: 2, y: 3&rbrace;</code>, raises <code>ArgumentError</code> because it is missing <code>__struct__: RustInElixir.Point</code>.</p>
+<h4><a href="#plain-maps" aria-hidden="true" class="anchor" id="plain-maps"></a>Plain maps</h4>
+<p>Use <a href="https://docs.rs/rustler/latest/rustler/derive.NifMap.html"><code>NifMap</code></a> for plain Elixir maps with atom keys.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #6639ba;">derive</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #953800;">NifMap</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">struct</span> <span style="color: #953800;">Delta</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">x</span><span style="color: #1f2328;">:</span> <span style="color: #cf222e;">i64</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="4">    <span style="color: #0550ae;">y</span><span style="color: #1f2328;">:</span> <span style="color: #cf222e;">i64</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="5"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># When passed to move_point/2 above, this decodes into Delta &lbrace; x: 10, y: 20 &rbrace;.</span>
+</div><div class="line" data-line="2"><span style="color: #1f2328;">%</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #0550ae;">x: </span><span style="color: #0550ae;">10</span><span style="color: #1f2328;">,</span> <span style="color: #0550ae;">y: </span><span style="color: #0550ae;">20</span><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<h3><a href="#custom-data-types" aria-hidden="true" class="anchor" id="custom-data-types"></a>Custom Data Types</h3>
+<p>Useful for custom validation or when the built-in types aren't enough for more complex cases.</p>
+<p>For these cases you can implement <a href="https://docs.rs/rustler/latest/rustler/types/trait.Decoder.html"><code>Decoder</code></a> and <a href="https://docs.rs/rustler/latest/rustler/types/trait.Encoder.html"><code>Encoder</code></a> for the custom type you have.</p>
+<p>If a Rust type implements <code>Decoder</code>, Rustler can receive it from Elixir. If it implements <code>Encoder</code>, Rustler can send it back to Elixir.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #cf222e;">use</span> <span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #953800;">Decoder</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">Encoder</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">Env</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">Error</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">Term</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="2">
+</div><div class="line" data-line="3"><span style="color: #cf222e;">struct</span> <span style="color: #953800;">NonEmptyString</span><span style="color: #1f2328;">(</span><span style="color: #953800;">String</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="4">
+</div><div class="line" data-line="5"><span style="color: #cf222e;">impl</span> <span style="color: #953800;">NonEmptyString</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="6">    <span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">new</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">value</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Self</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="7">        <span style="color: #cf222e;">let</span> <span style="color: #1f2328;">value</span> <span style="color: #0550ae;">=</span> <span style="color: #1f2328;">value</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">trim</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">to_string</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="8">
+</div><div class="line" data-line="9">        <span style="color: #cf222e;">if</span> <span style="color: #1f2328;">value</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">is_empty</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="10">            <span style="color: #953800;">Err</span><span style="color: #1f2328;">(</span><span style="color: #953800;">Error</span><span style="color: #1f2328;">::</span><span style="color: #0550ae;">BadArg</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="11">        <span style="color: #1f2328;">&rbrace;</span> <span style="color: #cf222e;">else</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="12">            <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #6639ba;">Self</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">value</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="13">        <span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="14">    <span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="15"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="16">
+</div><div class="line" data-line="17"><span style="color: #57606a;">// Elixir -&gt; Rust</span>
+</div><div class="line" data-line="18"><span style="color: #cf222e;">impl</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span> <span style="color: #953800;">Decoder</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span> <span style="color: #cf222e;">for</span> <span style="color: #953800;">NonEmptyString</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="19">    <span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">decode</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">term</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Term</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Self</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="20">        <span style="color: #953800;">Self</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">new</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">term</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">decode</span><span style="color: #1f2328;">::</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">String</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">)</span><span style="color: #0550ae;">?</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="21">    <span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="22"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="23">
+</div><div class="line" data-line="24"><span style="color: #57606a;">// Rust -&gt; Elixir</span>
+</div><div class="line" data-line="25"><span style="color: #cf222e;">impl</span> <span style="color: #953800;">Encoder</span> <span style="color: #cf222e;">for</span> <span style="color: #953800;">NonEmptyString</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="26">    <span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">encode</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">(</span><span style="color: #0550ae;">&amp;</span><span style="color: #0550ae;">self</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">env</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Env</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">Term</span><span style="color: #1f2328;">&lt;</span><span style="color: #cf222e;">&#39;</span><span style="color: #0550ae;">a</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="27">        <span style="color: #0550ae;">self</span><span style="color: #1f2328;">.</span><span style="color: #0550ae;">0</span><span style="color: #1f2328;">.</span><span style="color: #6639ba;">encode</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">env</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="28">    <span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="29"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="30">
+</div><div class="line" data-line="31"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="32"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">normalize_name</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">name</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">NonEmptyString</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">NonEmptyString</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="33">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">name</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="34"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># Calls the Rust fn normalize_name/1 above.</span>
+</div><div class="line" data-line="2"><span style="color: #57606a;"># &quot;  elixir  &quot; decodes into NonEmptyString(&quot;elixir&quot;).</span>
+</div><div class="line" data-line="3"><span style="color: #57606a;"># The return value encodes back into an Elixir string.</span>
+</div><div class="line" data-line="4"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">normalize_name</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;  elixir  &quot;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="5"><span style="color: #57606a;"># &quot;elixir&quot;</span>
+</div><div class="line" data-line="6">
+</div><div class="line" data-line="7"><span style="color: #953800;">RustInElixir.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">normalize_name</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;   &quot;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="8"><span style="color: #57606a;"># ** (ArgumentError) argument error</span>
+</div></code></pre>
+<p>Note how we added the capability to pass a String to a <code>NonEmptyString</code> and Rustler route the encoding/decoding properly.</p>
+<p>But be careful because bad input that's not validated correctly becomes a NIF decode error at runtime.</p>
+<h3><a href="#resources" aria-hidden="true" class="anchor" id="resources"></a>Resources</h3>
+<p>Resources are Rust-owned data behind an opaque Elixir reference.</p>
+<p>The actual data stays in memory controlled by Rust. Elixir only gets a handle, and passes that handle back when it wants Rust to do something with the data.</p>
+<p>Use resources when Rust needs to keep ownership of something large or stateful across multiple NIF calls. A CSV table is a good example: load it once, keep the parsed data in Rust, and let Elixir pass the handle around.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-plaintext" translate="no" tabindex="0"><div class="line" data-line="1">Elixir process
+</div><div class="line" data-line="2">  |
+</div><div class="line" data-line="3">  |  table = Native.load_csv(&quot;big.csv&quot;)
+</div><div class="line" data-line="4">  v
+</div><div class="line" data-line="5">+-----------------------------+
+</div><div class="line" data-line="6">| #Reference&lt;...&gt;              |  Elixir handle
+</div><div class="line" data-line="7">+-----------------------------+
+</div><div class="line" data-line="8">                  |
+</div><div class="line" data-line="9">                  | references
+</div><div class="line" data-line="10">                  v
+</div><div class="line" data-line="11">+-----------------------------+
+</div><div class="line" data-line="12">| Rust Table                  |  Rust-owned memory
+</div><div class="line" data-line="13">| rows, columns, indexes      |
+</div><div class="line" data-line="14">| native buffers, metadata    |
+</div><div class="line" data-line="15">+-----------------------------+
+</div></code></pre>
+<p>The BEAM does not receive the whole table after every filter, join, select, or aggregation. Each call sends the handle back to Rust, and Rust operates on the native data.</p>
+<p>Do not use a resource when a regular NIF can just return the answer. If you call Rust once with some input and get one result back, then a resource is probably not correct use.</p>
+<p>On the Rust side you must implement <a href="https://docs.rs/rustler/latest/rustler/trait.Resource.html"><code>Resource</code></a>, and values are wrapped in <a href="https://docs.rs/rustler/latest/rustler/struct.ResourceArc.html"><code>ResourceArc</code></a>:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #cf222e;">use</span> <span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #1f2328;">&lbrace;</span><span style="color: #953800;">NifResult</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">Resource</span><span style="color: #1f2328;">,</span> <span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">;</span>
+</div><div class="line" data-line="2">
+</div><div class="line" data-line="3"><span style="color: #cf222e;">struct</span> <span style="color: #953800;">Table</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="4">    <span style="color: #57606a;">// Big native data lives here:</span>
+</div><div class="line" data-line="5">    <span style="color: #57606a;">// rows, columns, indexes, native buffers, metadata, etc.</span>
+</div><div class="line" data-line="6">    <span style="color: #0550ae;">data</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">TableData</span><span style="color: #1f2328;">,</span>
+</div><div class="line" data-line="7"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="8">
+</div><div class="line" data-line="9"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">resource_impl</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="10"><span style="color: #cf222e;">impl</span> <span style="color: #953800;">Resource</span> <span style="color: #cf222e;">for</span> <span style="color: #953800;">Table</span> <span style="color: #1f2328;">&lbrace;</span><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="11">
+</div><div class="line" data-line="12"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="13"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">load_csv</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">path</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Table</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="14">    <span style="color: #57606a;">// 1. Build the big value once in Rust memory.</span>
+</div><div class="line" data-line="15">    <span style="color: #cf222e;">let</span> <span style="color: #1f2328;">data</span> <span style="color: #0550ae;">=</span> <span style="color: #0550ae;">..</span><span style="color: #1f2328;">.</span><span style="color: #1f2328;">;</span> <span style="color: #57606a;">// parse CSV into native memory</span>
+</div><div class="line" data-line="16">
+</div><div class="line" data-line="17">    <span style="color: #57606a;">// 2. Return a handle to Elixir, not the table itself.</span>
+</div><div class="line" data-line="18">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">new</span><span style="color: #1f2328;">(</span><span style="color: #953800;">Table</span> <span style="color: #1f2328;">&lbrace;</span> <span style="color: #0550ae;">data</span> <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="19"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="20">
+</div><div class="line" data-line="21"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="22"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">filter</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">table</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Table</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">column</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">value</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Table</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="23">    <span style="color: #57606a;">// 3. Decode the handle back into ResourceArc&lt;Table&gt;.</span>
+</div><div class="line" data-line="24">    <span style="color: #57606a;">// 4. Run the operation against Rust-owned memory.</span>
+</div><div class="line" data-line="25">    <span style="color: #cf222e;">let</span> <span style="color: #1f2328;">data</span> <span style="color: #0550ae;">=</span> <span style="color: #0550ae;">..</span><span style="color: #1f2328;">.</span><span style="color: #1f2328;">;</span> <span style="color: #57606a;">// filter the Rust-owned table</span>
+</div><div class="line" data-line="26">
+</div><div class="line" data-line="27">    <span style="color: #57606a;">// 5. Return another handle. The big table still does not cross into Elixir.</span>
+</div><div class="line" data-line="28">    <span style="color: #953800;">Ok</span><span style="color: #1f2328;">(</span><span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">new</span><span style="color: #1f2328;">(</span><span style="color: #953800;">Table</span> <span style="color: #1f2328;">&lbrace;</span> <span style="color: #0550ae;">data</span> <span style="color: #1f2328;">&rbrace;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="29"><span style="color: #1f2328;">&rbrace;</span>
+</div><div class="line" data-line="30">
+</div><div class="line" data-line="31"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="32"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">summarize</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">table</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">ResourceArc</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Table</span><span style="color: #1f2328;">&gt;</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">Summary</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="33">    <span style="color: #57606a;">// 6. Do heavy work in Rust, but return a small Elixir-friendly value.</span>
+</div><div class="line" data-line="34">    <span style="color: #0550ae;">..</span><span style="color: #1f2328;">.</span> <span style="color: #57606a;">// run a complex operation and return a small Elixir value</span>
+</div><div class="line" data-line="35"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir:</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #57606a;"># Loads and parses the CSV in Rust. Elixir receives only a handle.</span>
+</div><div class="line" data-line="2"><span style="color: #1f2328;">table</span> <span style="color: #0550ae;">=</span> <span style="color: #953800;">Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">load_csv</span><span style="color: #1f2328;">(</span><span style="color: #0a3069;">&quot;huge.csv&quot;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="3"><span style="color: #57606a;"># #Reference&lt;...&gt;</span>
+</div><div class="line" data-line="4">
+</div><div class="line" data-line="5"><span style="color: #57606a;"># Sends the handle back to Rust. Rust filters the table in native memory.</span>
+</div><div class="line" data-line="6"><span style="color: #1f2328;">filtered</span> <span style="color: #0550ae;">=</span> <span style="color: #953800;">Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">filter</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">table</span><span style="color: #1f2328;">,</span> <span style="color: #0a3069;">&quot;country&quot;</span><span style="color: #1f2328;">,</span> <span style="color: #0a3069;">&quot;BR&quot;</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="7"><span style="color: #57606a;"># #Reference&lt;...&gt;</span>
+</div><div class="line" data-line="8">
+</div><div class="line" data-line="9"><span style="color: #57606a;"># Sends the handle back again. Rust computes a summary and returns a small map.</span>
+</div><div class="line" data-line="10"><span style="color: #953800;">Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">summarize</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">filtered</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="11"><span style="color: #57606a;"># %&lbrace;rows: 1_200_000, columns: 42, ...&rbrace;</span>
+</div></code></pre>
+<p>Each NIF receives a handle, does the heavy work in Rust, and returns either another handle or a small Elixir value.</p>
+<p><a href="https://github.com/elixir-explorer/explorer">Explorer</a> makes extensive use of Resources and is a grea real-world example to learn more.</p>
+<p>There are some implication on using resources that will be covered in a following update.</p>
+<h3><a href="#safe-rust" aria-hidden="true" class="anchor" id="safe-rust"></a>Safe Rust</h3>
+<p>Rust is considered memory-safe language but it can be <a href="https://doc.rust-lang.org/book/ch20-01-unsafe-rust.html">unsafe</a> which opens the door for operations that can segfault and crash the whole BEAM instance.</p>
+<p>Do some research on the libs you're using and never use <code>unsafe</code> unless you absolutely need to.</p>
+<h2><a href="#mental-model" aria-hidden="true" class="anchor" id="mental-model"></a>Mental Model</h2>
+<p>Now that we have applied the patterns above, we can think about where Rust fits in an Elixir project.</p>
+<p>I like to think about it like another module in the system but written in Rust. Keep it boring.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-plaintext" translate="no" tabindex="0"><div class="line" data-line="1">+-------------------------------------------------------------+
+</div><div class="line" data-line="2">| Elixir application                                          |
+</div><div class="line" data-line="3">|                                                             |
+</div><div class="line" data-line="4">|  +------------------+      +-----------------------------+  |
+</div><div class="line" data-line="5">|  | Accounts         |      | Markdown                    |  |
+</div><div class="line" data-line="6">|  | Billing          |      | Search                      |  |
+</div><div class="line" data-line="7">|  | Notifications    |      | Image                       |  |
+</div><div class="line" data-line="8">|  +------------------+      +-----------------------------+  |
+</div><div class="line" data-line="9">|                                      |                      |
+</div><div class="line" data-line="10">|                                      v                      |
+</div><div class="line" data-line="11">|                           +---------------------+           |
+</div><div class="line" data-line="12">|                           | Markdown.Native     |           |
+</div><div class="line" data-line="13">|                           | written in Rust     |           |
+</div><div class="line" data-line="14">|                           +---------------------+           |
+</div><div class="line" data-line="15">|                                                             |
+</div><div class="line" data-line="16">|  Elixir still owns supervision, processes, messages,        |
+</div><div class="line" data-line="17">|  validation, retries, timeouts and back-pressure.           |
+</div><div class="line" data-line="18">+-------------------------------------------------------------+
+</div></code></pre>
+<p>The Elixir module is the public API. The Rust module is the implementation detail.</p>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-elixir" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #cf222e;">defmodule</span> <span style="color: #953800;">MyApp.Markdown</span> <span style="color: #cf222e;">do</span>
+</div><div class="line" data-line="2">  <span style="color: #cf222e;">def</span> <span style="color: #6639ba;">to_html</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">markdown</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">opts</span><span style="color: #1f2328;">)</span> <span style="color: #cf222e;">do</span>
+</div><div class="line" data-line="3">    <span style="color: #1f2328;">opts</span> <span style="color: #0550ae;">=</span> <span style="color: #6639ba;">validate_options!</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">opts</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="4">    <span style="color: #953800;">MyApp.Markdown.Native</span><span style="color: #0550ae;">.</span><span style="color: #6639ba;">to_html</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">markdown</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">opts</span><span style="color: #1f2328;">)</span>
+</div><div class="line" data-line="5">  <span style="color: #cf222e;">end</span>
+</div><div class="line" data-line="6"><span style="color: #cf222e;">end</span>
+</div></code></pre>
+<pre class="lumis" style="color: #1f2328; background-color: #ffffff;"><code class="language-rust" translate="no" tabindex="0"><div class="line" data-line="1"><span style="color: #1f2328;">#</span><span style="color: #1f2328;">[</span><span style="color: #cf222e;">rustler</span><span style="color: #1f2328;">::</span><span style="color: #6639ba;">nif</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">schedule</span> <span style="color: #0550ae;">=</span> <span style="color: #0a3069;">&quot;DirtyCpu&quot;</span><span style="color: #1f2328;">)</span><span style="color: #1f2328;">]</span>
+</div><div class="line" data-line="2"><span style="color: #cf222e;">fn</span> <span style="color: #6639ba;">to_html</span><span style="color: #1f2328;">(</span><span style="color: #1f2328;">markdown</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">String</span><span style="color: #1f2328;">,</span> <span style="color: #1f2328;">opts</span><span style="color: #1f2328;">:</span> <span style="color: #953800;">Options</span><span style="color: #1f2328;">)</span> <span style="color: #1f2328;">-&gt;</span> <span style="color: #953800;">NifResult</span><span style="color: #1f2328;">&lt;</span><span style="color: #953800;">String</span><span style="color: #1f2328;">&gt;</span> <span style="color: #1f2328;">&lbrace;</span>
+</div><div class="line" data-line="3">    <span style="color: #0550ae;">..</span><span style="color: #1f2328;">.</span>
+</div><div class="line" data-line="4"><span style="color: #1f2328;">&rbrace;</span>
+</div></code></pre>
+<p>Elixir is the coordinator and that's the reason I avoid async Ryst. The BEAM was made for concurrency and if Rust starts owning the workflow, spawning long-lived tasks, managing queues, retrying work, and keeping global application state, you no longer have &quot;a Rust module in an Elixir app&quot;.</p>
+<p>Error handling becomes a natural consequense of this mental modal and patterns.</p>
+<h2><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References</h2>
+<ul>
+<li><a href="https://www.erlang.org/docs/26/man/erl_nif">https://www.erlang.org/docs/26/man/erl_nif</a></li>
+<li><a href="https://docs.rs/rustler/latest/rustler/trait.Resource.html">https://docs.rs/rustler/latest/rustler/trait.Resource.html</a></li>
+<li><a href="https://blog.appsignal.com/2024/04/23/deep-diving-into-the-erlang-scheduler.html">https://blog.appsignal.com/2024/04/23/deep-diving-into-the-erlang-scheduler.html</a></li>
+<li><a href="https://fly.io/phoenix-files/elixir-and-rust-is-a-good-mix/">https://fly.io/phoenix-files/elixir-and-rust-is-a-good-mix/</a></li>
+</ul>
+          <!-- article:end -->
+        </article>
+      </div>
+    </main>
+
+    <script>
+      document
+        .getElementById("mobile-menu-button")
+        .addEventListener("click", function () {
+          const mobileMenu = document.getElementById("mobile-menu");
+          mobileMenu.classList.toggle("hidden");
+        });
+
+    </script>
+  </body>
+</html>
