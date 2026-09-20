@@ -1,0 +1,12 @@
+[tools]
+node = "24.21.0"
+prettier = "3.9.8"
+"npm:http-server" = "14.1.1"
+
+[tasks.dev]
+description = "Serve the site at http://localhost:8000"
+run = "http-server . -p 8000 --ext-fallback"
+
+[tasks.format]
+description = "Format the site"
+run = "prettier . --write"
